@@ -27,6 +27,13 @@ function updateMainDisplay(button) {
     mainDisplay.textContent += button.textContent;
 }
 
+function updateOperationDisplay(button) {
+    const mainDisplay = document.getElementById('main-display');
+    const operationDisplay = document.getElementById('operation');
+    operationDisplay.textContent = mainDisplay.textContent + ' ' +
+                                    button.textContent;
+}
+
 function clearMainDisplay() {
     const mainDisplay = document.getElementById('main-display');
     mainDisplay.textContent = '';
@@ -37,7 +44,29 @@ function clearOperationDisplay() {
     operationDisplay.textContent = '';
 }
 
+function deleteDigit() {
+    const mainDisplay = document.getElementById('main-display');
+    let processed = Array.from(mainDisplay.textContent);
+    processed.pop()
+    mainDisplay.textContent = processed.join('');
+}
 
+function toggleNumberSign() {
+    const mainDisplay = document.getElementById('main-display');
+    let processed = Array.from(mainDisplay.textContent);
+    if (processed.includes('-')) {
+        processed.shift();
+    } else {
+        processed.unshift('-');
+    }
+    mainDisplay.textContent = processed.join('');
+}
+
+function add(a, b) {
+    return a + b;
+}
+
+const mainDisplay = document.getElementById('main-display');
 const buttons = document.querySelectorAll('button');
 let numIsDecimal = false;
 
@@ -61,6 +90,12 @@ buttons.forEach(button => {
             clearMainDisplay();
             clearOperationDisplay();
             numIsDecimal = false;
+        } else if (button.id === 'delete') {
+            deleteDigit();
+        } else if (button.id === 'plus-minus') {
+            toggleNumberSign();
+        } else if (button.className === 'operator') {
+            updateOperationDisplay(button);
         }
     }); 
 
