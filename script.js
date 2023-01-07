@@ -60,6 +60,7 @@ buttons.forEach(button => {
         } else if (button.id === 'clear') {
             clearMainDisplay();
             clearOperationDisplay();
+            numIsDecimal = false;
         }
     }); 
 
