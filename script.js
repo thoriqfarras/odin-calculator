@@ -22,12 +22,24 @@ function buttonUnpressed(button) {
     button.style.color = 'lightgray';
 }
 
-function updateMainDisplay() {
+function updateMainDisplay(button) {
     const mainDisplay = document.getElementById('main-display');
-    mainDisplay.textContent = this.textContent;
+    mainDisplay.textContent += button.textContent;
 }
 
+function clearMainDisplay() {
+    const mainDisplay = document.getElementById('main-display');
+    mainDisplay.textContent = '';
+}
+
+function clearOperationDisplay() {
+    const operationDisplay = document.getElementById('operation');
+    operationDisplay.textContent = '';
+}
+
+
 const buttons = document.querySelectorAll('button');
+let numIsDecimal = false;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -38,7 +50,17 @@ buttons.forEach(button => {
         buttonUnpressed(button);
     });
 
-    if (button.className === 'number') { 
-        button.addEventListener('click', updateMainDisplay); 
-    }
+    button.addEventListener('click', () => {
+        if (button.id === 'decimal-point' && numIsDecimal) return;
+        if (button.className === 'number') {
+            if (button.id === 'decimal-point') {
+                numIsDecimal = true;
+            } 
+            updateMainDisplay(button);
+        } else if (button.id === 'clear') {
+            clearMainDisplay();
+            clearOperationDisplay();
+        }
+    }); 
+
 });
