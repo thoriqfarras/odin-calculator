@@ -59,7 +59,7 @@ body {
     gap: 10px;
 }
 
-.button {
+button {
     width: 65px;
     height: 52px;
     background-color: rgb(87, 87, 87);
