@@ -12,6 +12,10 @@ function buttonPressed() {
 }
 
 function buttonUnpressed(button) {
+    /* 
+    I added a parameter because the functtion is called
+    on an event listener for the whole page.
+    */
     if (button.id === 'equal') {
         button.style['background-color'] = 'rgb(196, 127, 0)';
     } else if (button.className === 'operator') {
@@ -47,8 +51,9 @@ function clearOperationDisplay() {
 function deleteDigit() {
     const mainDisplay = document.getElementById('main-display');
     let processed = Array.from(mainDisplay.textContent);
-    processed.pop()
+    let deleted = processed.pop();
     mainDisplay.textContent = processed.join('');
+    return deleted;
 }
 
 function toggleNumberSign() {
@@ -69,6 +74,9 @@ function add(a, b) {
 const mainDisplay = document.getElementById('main-display');
 const buttons = document.querySelectorAll('button');
 let numIsDecimal = false;
+let deleted = '';
+let a;
+let b;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -91,10 +99,13 @@ buttons.forEach(button => {
             clearOperationDisplay();
             numIsDecimal = false;
         } else if (button.id === 'delete') {
-            deleteDigit();
+            deleted = deleteDigit();
+            if (deleted === '.') numIsDecimal = false;
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
         } else if (button.className === 'operator') {
+            a = +mainDisplay.textContent;
+            console.log(`${a} ${typeof(a)}`);
             updateOperationDisplay(button);
         }
     }); 
