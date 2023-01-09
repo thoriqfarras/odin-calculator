@@ -26,7 +26,7 @@ function buttonUnpressed(button) {
     button.style.color = 'lightgray';
 }
 
-function updateMainDisplay(button) {
+function fillMainDisplay(button) {
     const mainDisplay = document.getElementById('main-display');
     mainDisplay.textContent += button.textContent;
 }
@@ -40,7 +40,7 @@ function updateOperationDisplay(button) {
 
 function clearMainDisplay() {
     const mainDisplay = document.getElementById('main-display');
-    mainDisplay.textContent = '';
+    mainDisplay.textContent = '0';
 }
 
 function clearOperationDisplay() {
@@ -71,12 +71,55 @@ function add(a, b) {
     return a + b;
 }
 
+function subtract(a, b) {
+    return a - b;
+}
+
+function multiply(a, b) {
+    return a * b;
+}
+
+function divide(a, b) {
+    return a / b;
+}
+
+function operate(a, b, operation) {
+    if (operation === ADD) {
+        return add(a, b)
+    } else if (operation === SUBTRACT) {
+        return subtract(a, b)
+    } else if (operation === MULTIPLY) {
+        return multiply(a, b)
+    } else if (operation === DIVIDE) {
+        return divide(a, b)
+    }
+}
+
+function getDisplayValue() {
+    const mainDisplay = document.getElementById('main-display');
+    return mainDisplay.textContent;
+}
+
+function displayResult() {
+    const mainDisplay = document.getElementById('main-display');
+    mainDisplay.textContent = result;
+}
+
+const ADD = '+';
+const SUBTRACT = '-';
+const MULTIPLY = 'x';
+const DIVIDE = '÷';
+const EQUAL = '='
 const mainDisplay = document.getElementById('main-display');
 const buttons = document.querySelectorAll('button');
 let numIsDecimal = false;
 let deleted = '';
-let a;
-let b;
+let operator = '';
+let operation = '';
+let a = null;
+let b = 0;
+let result = 0;
+let prevEventIsOperator = false;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -90,23 +133,57 @@ buttons.forEach(button => {
     button.addEventListener('click', () => {
         if (button.id === 'decimal-point' && numIsDecimal) return;
         if (button.className === 'number') {
+            if (prevEventIsOperator) {
+                mainDisplay.textContent = '';
+                prevEventIsOperator = false;
+            }
+            if (mainDisplay.textContent === '0') {
+                mainDisplay.textContent = '';
+            }
             if (button.id === 'decimal-point') {
                 numIsDecimal = true;
             } 
-            updateMainDisplay(button);
+            fillMainDisplay(button);
         } else if (button.id === 'clear') {
             clearMainDisplay();
             clearOperationDisplay();
             numIsDecimal = false;
+            prevEventIsOperator = false;
+            a = 0;
+            b = 0;
         } else if (button.id === 'delete') {
             deleted = deleteDigit();
             if (deleted === '.') numIsDecimal = false;
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
         } else if (button.className === 'operator') {
-            a = +mainDisplay.textContent;
-            console.log(`${a} ${typeof(a)}`);
+            operator = button.textContent;
+            console.log(prevEventIsOperator);
+            if (!a) {
+                a = getDisplayValue();
+            } else {
+                b = getDisplayValue();
+            }
+
+            if (operator === EQUAL) {
+                result = operate(+a, +b, operation);
+                console.log(result);
+                displayResult(result);
+            } else {
+                if (operator === ADD) {
+                    operation = ADD;
+                }
+            }
+            
+            prevEventIsOperator = true;
             updateOperationDisplay(button);
+            console.log(prevEventIsOperator);
+        }
+
+        if (button.className !== 'number') {
+            console.log(`a: ${a}`);
+            console.log(`b: ${b}`);
+            console.log(`result: ${result}`);
         }
     }); 
 
