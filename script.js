@@ -125,7 +125,7 @@ let numIsDecimal = false;
 let a = null;
 let b = null;
 let result = null;
-let operation = null;
+let operation = EQUAL;
 let previousEventIsOperator = false;
 
 buttons.forEach(button => {
@@ -175,7 +175,13 @@ buttons.forEach(button => {
             else b = +getDisplayValue();
             
             const operator = button.textContent;
-            if (operator !== EQUAL) {
+            if (operator === EQUAL && (operation !== EQUAL)) {
+                result = operate(a, b, operation);
+                operation = getOperation(operator);
+                console.log(`a: ${a}`);
+                console.log(`b: ${b}`);
+                console.log(`result: ${result}`);
+            } else {
                 if (b && operation === EQUAL) {
                     a = result;
                 } else if (b) {
@@ -188,13 +194,9 @@ buttons.forEach(button => {
                 console.log(`result: ${result}`);
                 operation = getOperation(operator);
                 previousEventIsOperator = true;
-            } else {
-                result = operate(a, b, operation);
-                operation = getOperation(operator);
-                console.log(`a: ${a}`);
-                console.log(`b: ${b}`);
-                console.log(`result: ${result}`);
             }
+
+            numIsDecimal = false;
             displayResult();
             updateOperationDisplay(button);
         }
