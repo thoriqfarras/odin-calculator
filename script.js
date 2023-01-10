@@ -119,6 +119,17 @@ function getOperation(operator) {
     return 'empty';
 }
 
+function reset() {
+    clearMainDisplay();
+    clearOperationDisplay();
+    numIsDecimal = false;
+    previousEventIsOperator = false;
+    a = null;
+    b = null;
+    result = null;
+    operation = null;
+}
+
 const ADD = '+';
 const SUBTRACT = '-';
 const MULTIPLY = 'x';
@@ -145,32 +156,29 @@ buttons.forEach(button => {
     
     button.addEventListener('click', () => {
         if (button.id === 'decimal-point' && numIsDecimal) return;
+        
+        // doesn't reset display when equal button is pressed twice.
         // if (previousEventIsOperator && operation === EQUAL) previousEventIsOperator = false;
+
         if (button.className === 'number') {
+            if (operation === EQUAL) { // reset whole calculator when typing in new number after pressing equal.
+                reset();
+            }
             if (previousEventIsOperator) {
                 mainDisplay.textContent = '';
                 previousEventIsOperator = false;
             }
-            
             if (mainDisplay.textContent === '0' && button.textContent !== '.') {
                 mainDisplay.textContent = '';
             } else if (mainDisplay.textContent === '-0' && button.textContent !== '.') {
                 mainDisplay.textContent = '-';
             }
-            
             if (button.id === 'decimal-point') {
                 numIsDecimal = true;
             } 
             fillMainDisplay(button);
         } else if (button.id === 'clear') {
-            clearMainDisplay();
-            clearOperationDisplay();
-            numIsDecimal = false;
-            previousEventIsOperator = false;
-            a = null;
-            b = null;
-            result = null;
-            operation = EQUAL;
+            reset();
         } else if (button.id === 'delete') {
             deleted = deleteDigit();
             if (deleted === '.') numIsDecimal = false;
@@ -181,11 +189,12 @@ buttons.forEach(button => {
             else b = +getDisplayValue();
             
             const operator = button.textContent;
-            if (previousEventIsOperator) {
+            if (previousEventIsOperator) { // allow changing of operators as long as second number is not input.
                 operation = getOperation(operator);
             } else {        
                 if (operator === EQUAL && operation !== EQUAL) {
                     result = operate(a, b, operation);
+                    previousEventIsOperator = true; // resets display when typing in new number after pressing equal.
                     console.log(`a: ${a}`);
                     console.log(`b: ${b}`);
                     console.log(`result: ${result}`);
@@ -204,7 +213,7 @@ buttons.forEach(button => {
                 }
             }
             
-            previousOperation = operation;
+            previousOperation = operation; // this is solely for operation display purpose.
             operation = getOperation(operator);
             numIsDecimal = false;
             displayResult();
