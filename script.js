@@ -92,7 +92,7 @@ function operate(a, b, operation) {
         return multiply(a, b)
     } else if (operation === DIVIDE) {
         return divide(a, b)
-    }
+    } else return null;
 }
 
 function getDisplayValue() {
@@ -105,6 +105,15 @@ function displayResult() {
     mainDisplay.textContent = result;
 }
 
+function getOperation(operator) {
+    if (operator === ADD) return ADD;
+    else if (operator === SUBTRACT) return SUBTRACT;
+    else if (operator === MULTIPLY) return MULTIPLY;
+    else if (operator === DIVIDE) return DIVIDE;
+    else if (operator === EQUAL) return EQUAL;
+    return 'empty';
+}
+
 const ADD = '+';
 const SUBTRACT = '-';
 const MULTIPLY = 'x';
@@ -113,13 +122,6 @@ const EQUAL = '='
 const mainDisplay = document.getElementById('main-display');
 const buttons = document.querySelectorAll('button');
 let numIsDecimal = false;
-let deleted = '';
-let operator = '';
-let operation = '';
-let a = null;
-let b = 0;
-let result = 0;
-let prevEventIsOperator = false;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -132,14 +134,19 @@ buttons.forEach(button => {
 
     button.addEventListener('click', () => {
         if (button.id === 'decimal-point' && numIsDecimal) return;
+        if (prevEventIsOperator && operation === EQUAL) prevEventIsOperator = false;
         if (button.className === 'number') {
             if (prevEventIsOperator) {
                 mainDisplay.textContent = '';
                 prevEventIsOperator = false;
             }
-            if (mainDisplay.textContent === '0') {
+
+            if (mainDisplay.textContent === '0' && button.textContent !== '.') {
                 mainDisplay.textContent = '';
+            } else if (mainDisplay.textContent === '-0' && button.textContent !== '.') {
+                mainDisplay.textContent = '-';
             }
+
             if (button.id === 'decimal-point') {
                 numIsDecimal = true;
             } 
@@ -149,41 +156,17 @@ buttons.forEach(button => {
             clearOperationDisplay();
             numIsDecimal = false;
             prevEventIsOperator = false;
-            a = 0;
-            b = 0;
+            a = null;
+            b = null;
+            result = null;
+            operation = EQUAL;
         } else if (button.id === 'delete') {
             deleted = deleteDigit();
             if (deleted === '.') numIsDecimal = false;
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
         } else if (button.className === 'operator') {
-            operator = button.textContent;
-            console.log(prevEventIsOperator);
-            if (!a) {
-                a = getDisplayValue();
-            } else {
-                b = getDisplayValue();
-            }
-
-            if (operator === EQUAL) {
-                result = operate(+a, +b, operation);
-                console.log(result);
-                displayResult(result);
-            } else {
-                if (operator === ADD) {
-                    operation = ADD;
-                }
-            }
             
-            prevEventIsOperator = true;
-            updateOperationDisplay(button);
-            console.log(prevEventIsOperator);
-        }
-
-        if (button.className !== 'number') {
-            console.log(`a: ${a}`);
-            console.log(`b: ${b}`);
-            console.log(`result: ${result}`);
         }
     }); 
 
