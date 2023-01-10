@@ -34,8 +34,13 @@ function fillMainDisplay(button) {
 function updateOperationDisplay(button) {
     const mainDisplay = document.getElementById('main-display');
     const operationDisplay = document.getElementById('operation');
-    operationDisplay.textContent = mainDisplay.textContent + ' ' +
-    button.textContent;
+    if (button.textContent === EQUAL && previousOperation !== EQUAL) {
+        operationDisplay.textContent = `${a} ${previousOperation} ${b} =`;
+    } else {
+        if (operation === EQUAL) return;
+        operationDisplay.textContent = mainDisplay.textContent + ' ' + 
+                                        button.textContent;
+    }
 }
 
 function clearMainDisplay() {
@@ -126,6 +131,7 @@ let a = null;
 let b = null;
 let result = null;
 let operation = EQUAL;
+let previousOperation = null;
 let previousEventIsOperator = false;
 
 buttons.forEach(button => {
@@ -139,7 +145,7 @@ buttons.forEach(button => {
     
     button.addEventListener('click', () => {
         if (button.id === 'decimal-point' && numIsDecimal) return;
-        if (previousEventIsOperator && operation === EQUAL) previousEventIsOperator = false;
+        // if (previousEventIsOperator && operation === EQUAL) previousEventIsOperator = false;
         if (button.className === 'number') {
             if (previousEventIsOperator) {
                 mainDisplay.textContent = '';
@@ -170,32 +176,36 @@ buttons.forEach(button => {
             if (deleted === '.') numIsDecimal = false;
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
-        } else if (button.className === 'operator' && !previousEventIsOperator) {
+        } else if (button.className === 'operator' ) {
             if (a === null) a = +getDisplayValue();
             else b = +getDisplayValue();
             
             const operator = button.textContent;
-            if (operator === EQUAL && (operation !== EQUAL)) {
-                result = operate(a, b, operation);
+            if (previousEventIsOperator) {
                 operation = getOperation(operator);
-                console.log(`a: ${a}`);
-                console.log(`b: ${b}`);
-                console.log(`result: ${result}`);
-            } else {
-                if (b && operation === EQUAL) {
-                    a = result;
-                } else if (b) {
-                    a = operate(a, b, operation);
+            } else {        
+                if (operator === EQUAL && operation !== EQUAL) {
+                    result = operate(a, b, operation);
+                    console.log(`a: ${a}`);
+                    console.log(`b: ${b}`);
+                    console.log(`result: ${result}`);
+                } else {
+                    if (b && operation === EQUAL) {
+                        a = result;
+                    } else if (b) {
+                        a = operate(a, b, operation);
+                    }
+                    console.log(`a: ${a}`);
+                    console.log(`b: ${b}`);
+                    b = 0;
+                    result = a;
+                    console.log(`result: ${result}`);
+                    previousEventIsOperator = true;
                 }
-                console.log(`a: ${a}`);
-                console.log(`b: ${b}`);
-                b = 0;
-                result = a;
-                console.log(`result: ${result}`);
-                operation = getOperation(operator);
-                previousEventIsOperator = true;
             }
-
+            
+            previousOperation = operation;
+            operation = getOperation(operator);
             numIsDecimal = false;
             displayResult();
             updateOperationDisplay(button);
