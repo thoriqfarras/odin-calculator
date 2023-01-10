@@ -122,6 +122,12 @@ const EQUAL = '='
 const mainDisplay = document.getElementById('main-display');
 const buttons = document.querySelectorAll('button');
 let numIsDecimal = false;
+let a = null;
+let b = null;
+let result = null;
+let operation = null;
+let operator = null;
+let previousEventIsOperator = false;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -166,8 +172,23 @@ buttons.forEach(button => {
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
         } else if (button.className === 'operator') {
-            
+            if (!a) a = getDisplayValue();
+            else b = getDisplayValue();
+
+            operator = button.textContent;
+            if (operator !== EQUAL) {
+                
+            }
         }
     }); 
 
 });
+
+/* 
+    1. let displayValue = 0
+    2. user types in number
+    3. user presses an operator:
+        if operator is not equal:
+
+
+*/
