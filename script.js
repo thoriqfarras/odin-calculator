@@ -35,7 +35,7 @@ function updateOperationDisplay(button) {
     const mainDisplay = document.getElementById('main-display');
     const operationDisplay = document.getElementById('operation');
     operationDisplay.textContent = mainDisplay.textContent + ' ' +
-                                    button.textContent;
+    button.textContent;
 }
 
 function clearMainDisplay() {
@@ -126,33 +126,32 @@ let a = null;
 let b = null;
 let result = null;
 let operation = null;
-let operator = null;
 let previousEventIsOperator = false;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
-
+    
     button.addEventListener('mousedown', buttonPressed);
-
+    
     window.addEventListener('mouseup', () => {
         buttonUnpressed(button);
     });
-
+    
     button.addEventListener('click', () => {
         if (button.id === 'decimal-point' && numIsDecimal) return;
-        if (prevEventIsOperator && operation === EQUAL) prevEventIsOperator = false;
+        if (previousEventIsOperator && operation === EQUAL) previousEventIsOperator = false;
         if (button.className === 'number') {
-            if (prevEventIsOperator) {
+            if (previousEventIsOperator) {
                 mainDisplay.textContent = '';
-                prevEventIsOperator = false;
+                previousEventIsOperator = false;
             }
-
+            
             if (mainDisplay.textContent === '0' && button.textContent !== '.') {
                 mainDisplay.textContent = '';
             } else if (mainDisplay.textContent === '-0' && button.textContent !== '.') {
                 mainDisplay.textContent = '-';
             }
-
+            
             if (button.id === 'decimal-point') {
                 numIsDecimal = true;
             } 
@@ -161,7 +160,7 @@ buttons.forEach(button => {
             clearMainDisplay();
             clearOperationDisplay();
             numIsDecimal = false;
-            prevEventIsOperator = false;
+            previousEventIsOperator = false;
             a = null;
             b = null;
             result = null;
@@ -171,24 +170,43 @@ buttons.forEach(button => {
             if (deleted === '.') numIsDecimal = false;
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
-        } else if (button.className === 'operator') {
-            if (!a) a = getDisplayValue();
-            else b = getDisplayValue();
-
-            operator = button.textContent;
+        } else if (button.className === 'operator' && !previousEventIsOperator) {
+            if (a === null) a = +getDisplayValue();
+            else b = +getDisplayValue();
+            
+            const operator = button.textContent;
             if (operator !== EQUAL) {
-                
+                if (b && operation === EQUAL) {
+                    a = result;
+                } else if (b) {
+                    a = operate(a, b, operation);
+                }
+                console.log(`a: ${a}`);
+                console.log(`b: ${b}`);
+                b = 0;
+                result = a;
+                console.log(`result: ${result}`);
+                operation = getOperation(operator);
+                previousEventIsOperator = true;
+            } else {
+                result = operate(a, b, operation);
+                operation = getOperation(operator);
+                console.log(`a: ${a}`);
+                console.log(`b: ${b}`);
+                console.log(`result: ${result}`);
             }
+            displayResult();
+            updateOperationDisplay(button);
         }
     }); 
-
+    
 });
 
 /* 
-    1. let displayValue = 0
-    2. user types in number
-    3. user presses an operator:
-        if operator is not equal:
+1. let displayValue = 0
+2. user types in number
+3. user presses an operator:
+if operator is not equal:
 
 
 */
