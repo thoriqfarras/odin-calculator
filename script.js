@@ -1,3 +1,9 @@
+/* 
+    PROGRESS UPDATE:
+
+    Calculation functionality is somewhat done but has SO many bugs.
+*/
+
 function buttonPressed() {
     if (this.id === 'equal') {
         this.style['background-color'] = 'rgb(186, 117, 0)';
@@ -122,12 +128,15 @@ const EQUAL = '='
 const mainDisplay = document.getElementById('main-display');
 const buttons = document.querySelectorAll('button');
 let numIsDecimal = false;
+let deleted = '';
+let operator = '';
+let operation = EQUAL;
+let prevOperation = '';
 let a = null;
 let b = null;
 let result = null;
-let operation = null;
-let operator = null;
-let previousEventIsOperator = false;
+let prevEventIsOperator = false;
+let lastPressed = '';
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -171,24 +180,56 @@ buttons.forEach(button => {
             if (deleted === '.') numIsDecimal = false;
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
-        } else if (button.className === 'operator') {
-            if (!a) a = getDisplayValue();
-            else b = getDisplayValue();
-
+        } else if (button.className === 'operator' && !prevEventIsOperator) {
             operator = button.textContent;
-            if (operator !== EQUAL) {
-                
+            if (!a) {
+                a = +getDisplayValue();
+            } else {
+                b = +getDisplayValue();
             }
+
+            if (operator === EQUAL && operation !== EQUAL){
+                result = operate(a, b, operation);
+                operation = getOperation(operator);
+            } else {
+                if (b && operation === EQUAL) {
+                    a = result;
+                    b = 0;
+                    console.log('coming off from an equal');
+                } else if (b) {
+                    a = operate(a, b, operation);
+                    console.log('calculating');
+                    b = 0;
+                }
+                console.log('second IF');
+                operation = getOperation(operator);
+                result = a;
+                prevEventIsOperator = true;
+            }
+            // operation = getOperation(operator);
+            // if (operation === EQUAL){
+            //     result = operate(a, b, prevOperation);
+            // } else {
+            //     if (b && operation === EQUAL) {
+            //         a = result;
+            //         b = 0;
+            //     } else if (b) {
+            //         a = operate(a, b, operation);
+            //         // b = 0;
+            //     }
+            //     result = a;
+            //     prevOperation = operation;
+            // }
+            displayResult();
+            updateOperationDisplay(button);
         }
+        if (button.className !== 'number') {
+            console.log(`a: ${a}`);
+            console.log(`b: ${b}`);
+            console.log(`result: ${result}`);
+            console.log(`last operation: ${operation}`);
+        }
+        lastPressed = button.textContent;
     }); 
 
 });
-
-/* 
-    1. let displayValue = 0
-    2. user types in number
-    3. user presses an operator:
-        if operator is not equal:
-
-
-*/
