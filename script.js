@@ -188,43 +188,6 @@ buttons.forEach(button => {
             if (a === null) a = +getDisplayValue();
             else b = +getDisplayValue();
             
-            const operator = button.textContent;
-            if (previousEventIsOperator) { // allow changing of operators as long as second number is not input.
-                operation = getOperation(operator);
-            } else {        
-                if (operator === EQUAL && operation !== EQUAL) {
-                    result = operate(a, b, operation);
-                    console.log('hola');
-                } else if (operator === EQUAL && operation === EQUAL) {
-                    // operation = null;
-                } else {
-                    if (b !== null && operation === EQUAL) {
-                        a = result;
-                        console.log('hello');
-                    } else if (b) {
-                        a = operate(a, b, operation);
-                        console.log('hi');
-                    }
-                    console.log('hihi');
-                    b = 0;
-                    result = a;
-                    previousEventIsOperator = true;
-                }
-                operation = getOperation(operator);
-            }
-
-            console.log(`a: ${a}`);
-            console.log(`b: ${b}`);
-            console.log(`result: ${result}`);
-            console.log(`operator: ${operator}`);
-            console.log(`operation: ${operation}`);
-            console.log(`previous operation: ${previousOperation}`);
-            console.log(`previous is operation: ${previousEventIsOperator}`);
-    
-            previousOperation = operation; // this is solely for operation display purpose.
-            numIsDecimal = false;
-            displayResult();
-            updateOperationDisplay(button);
         }
     }); 
     
