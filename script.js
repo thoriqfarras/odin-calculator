@@ -148,7 +148,7 @@ let previousOperation = null;
 let previousEventIsOperator = false;
 
 let operating = false;
-let finished = true;
+let finished = false;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -192,8 +192,8 @@ buttons.forEach(button => {
             
             // TO FIX:
             // (DONE)1. follow up calculations following an equal
-            // 2. fix operantor symbol in operation display when pressing equal.
-
+            // (DONE)2. fix operantor symbol in operation display when pressing equal for the very first time.
+            
             
             if (a === null) {
                 operating = true;
@@ -210,9 +210,10 @@ buttons.forEach(button => {
                 b = 0;
             }
             
+            console.log(operating)
             if (operating) {
                 // check for change of operator before taking in second input.
-                if (previousEventIsOperator && operator !== EQUAL) {
+                if (previousEventIsOperator && operator !== EQUAL && b !== null) {
                     operation = getOperation(operator);
                     updateOperationDisplay(button);
                     return;
