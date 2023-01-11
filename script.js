@@ -34,7 +34,7 @@ function fillMainDisplay(button) {
 function updateOperationDisplay(button) {
     const mainDisplay = document.getElementById('main-display');
     const operationDisplay = document.getElementById('operation');
-    if (button.textContent === EQUAL && previousOperation !== EQUAL) {
+    if (button.textContent === EQUAL) {
         operationDisplay.textContent = `${a} ${previousOperation} ${b} =`;
     } else {
         if (operation === EQUAL) return;
@@ -128,6 +128,8 @@ function reset() {
     b = null;
     result = null;
     operation = null;
+    operating = false;
+    finished = false;
 }
 
 const ADD = '+';
@@ -141,9 +143,12 @@ let numIsDecimal = false;
 let a = null;
 let b = null;
 let result = null;
-let operation = EQUAL;
+let operation = null;
 let previousOperation = null;
 let previousEventIsOperator = false;
+
+let operating = false;
+let finished = true;
 
 buttons.forEach(button => {
     button.addEventListener('dragstart', (e) => { e.preventDefault() });
@@ -161,13 +166,11 @@ buttons.forEach(button => {
         // if (previousEventIsOperator && operation === EQUAL) previousEventIsOperator = false;
 
         if (button.className === 'number') {
-            if (operation === EQUAL) { // reset whole calculator when typing in new number after pressing equal.
-                reset();
-            }
             if (previousEventIsOperator) {
                 mainDisplay.textContent = '';
                 previousEventIsOperator = false;
             }
+
             if (mainDisplay.textContent === '0' && button.textContent !== '.') {
                 mainDisplay.textContent = '';
             } else if (mainDisplay.textContent === '-0' && button.textContent !== '.') {
@@ -185,19 +188,149 @@ buttons.forEach(button => {
         } else if (button.id === 'plus-minus') {
             toggleNumberSign();
         } else if (button.className === 'operator' ) {
-            if (a === null) a = +getDisplayValue();
-            else b = +getDisplayValue();
+            const operator = button.textContent;
             
+            // TO FIX:
+            // (DONE)1. follow up calculations following an equal
+            // 2. fix operantor symbol in operation display when pressing equal.
+
+            
+            if (a === null) {
+                operating = true;
+                a = +getDisplayValue();
+                result = a;
+                operation = getOperation(operator);
+                previousEventIsOperator = true;
+            } else b = +getDisplayValue();
+            
+            if (operator !== EQUAL && finished) {
+                finished = false;
+                operating = true;
+                a = result;
+                b = 0;
+            }
+            
+            if (operating) {
+                // check for change of operator before taking in second input.
+                if (previousEventIsOperator && operator !== EQUAL) {
+                    operation = getOperation(operator);
+                    updateOperationDisplay(button);
+                    return;
+                } else if (previousEventIsOperator && operator === EQUAL) return;
+                
+                if (button.textContent === EQUAL && operating) {
+                    result = operate(a, b, operation);             
+                    operating = false;
+                    finished = true;
+                    // a = result; // saving result in a for when the user does another operation on the result.
+                    // operation = getOperation(operator); 
+                    // previousEventIsOperator = false;
+                } else {
+                    operating = true;
+                    result = operate(a, b, operation);
+                    a = result;
+                    operation = getOperation(operator);   
+                    // previousEventIsOperator = true;
+                }
+                displayResult();
+                updateOperationDisplay(button);
+                previousEventIsOperator = button.textContent === EQUAL ? false : true;
+                numIsDecimal = false;
+                previousOperation = operation;
+            }
+                
+
+            /* if (a === null) {
+                operating = true;
+                a = +getDisplayValue();
+                result = a;
+                operation = getOperation(operator);
+                previousEventIsOperator = true;
+            } else if (operating) { 
+
+                // check for change of operator before taking in second input.
+                if (previousEventIsOperator && operator !== EQUAL) {
+                    operation = getOperation(operator);
+                    updateOperationDisplay(button);
+                    return;
+                } else if (previousEventIsOperator && operator === EQUAL) return;
+                
+
+                b = +getDisplayValue();
+                if (button.textContent === EQUAL && operating) {
+                    result = operate(a, b, operation);             
+                    operating = false;
+                    finished = true;
+                    // a = result; // saving result in a for when the user does another operation on the result.
+                    // operation = getOperation(operator); 
+                    // previousEventIsOperator = false;
+                } else {
+                    operating = true;
+                    result = operate(a, b, operation);
+                    a = result;
+                    operation = getOperation(operator);   
+                    // previousEventIsOperator = true;
+                }
+            }
+
+            displayResult();
+            updateOperationDisplay(button);
+            previousEventIsOperator = button.textContent === EQUAL ? false : true;
+            numIsDecimal = false;
+            previousOperation = operation;
+            */
+
+            /* if (a === null) {
+                operating = true;
+                a = +getDisplayValue();
+                result = a;
+                operation = getOperation(operator);
+                previousEventIsOperator = true;
+            } else b = +getDisplayValue() 
+
+            // check for change of operator before taking in second input.
+            if (previousEventIsOperator && operator !== EQUAL) {
+                operation = getOperation(operator);
+                updateOperationDisplay(button);
+                return;
+            } else if (previousEventIsOperator && operator === EQUAL) return;
+
+            if (button.textContent === EQUAL && operating) {
+                result = operate(a, b, operation);             
+                operating = false;
+                // a = result; // saving result in a for when the user does another operation on the result.
+                // operation = getOperation(operator);   
+                // previousEventIsOperator = false;
+            } else if (operating) {
+                operating = true
+                result = operate(a, b, operation);
+                a = result;
+                operation = getOperation(operator);   
+                // previousEventIsOperator = true;
+            }
+            
+
+            displayResult();
+            updateOperationDisplay(button);
+            previousEventIsOperator = button.textContent === EQUAL ? false : true;
+            numIsDecimal = false;
+            previousOperation = operation; */
+            
+            // DEBUGGING
+            console.log(`a: ${a}`);
+            console.log(`b: ${b}`);
+            console.log(`result: ${result}`);
+            console.log(`previous operation: ${previousOperation}`);
+            console.log(`operation: ${operation}`);
+            console.log(`operating: ${operating ? 'yes' : 'no'}`);
         }
     }); 
     
 });
 
 /* 
-1. let displayValue = 0
-2. user types in number
-3. user presses an operator:
-if operator is not equal:
-
+1. operator is pressed
+    - operating = true
+    - 
 
 */
