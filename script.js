@@ -171,6 +171,10 @@ buttons.forEach(button => {
                 previousEventIsOperator = false;
             }
 
+            if (finished) {
+                reset();
+            }
+
             if (mainDisplay.textContent === '0' && button.textContent !== '.') {
                 mainDisplay.textContent = '';
             } else if (mainDisplay.textContent === '-0' && button.textContent !== '.') {
