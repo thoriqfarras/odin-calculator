@@ -194,25 +194,32 @@ buttons.forEach(button => {
             } else {        
                 if (operator === EQUAL && operation !== EQUAL) {
                     result = operate(a, b, operation);
-                    previousEventIsOperator = true; // resets display when typing in new number after pressing equal.
-                    console.log(`a: ${a}`);
-                    console.log(`b: ${b}`);
-                    console.log(`result: ${result}`);
+                    // previousEventIsOperator = true; // resets display when typing in new number after pressing equal.
+                    console.log('hola');
                 } else {
-                    if (b && operation === EQUAL) {
+                    if (b !== null && operation === EQUAL) {
                         a = result;
+                        console.log('hello');
                     } else if (b) {
                         a = operate(a, b, operation);
+                        console.log('hi');
                     }
-                    console.log(`a: ${a}`);
-                    console.log(`b: ${b}`);
+                    console.log('hihi');
                     b = 0;
                     result = a;
-                    console.log(`result: ${result}`);
                     previousEventIsOperator = true;
                 }
+                // previousEventIsOperator = true;
             }
-            
+
+            console.log(`a: ${a}`);
+            console.log(`b: ${b}`);
+            console.log(`result: ${result}`);
+            console.log(`operator: ${operator}`);
+            console.log(`operation: ${operation}`);
+            console.log(`previous operation: ${previousOperation}`);
+            console.log(`previous is operation: ${previousEventIsOperator}`);
+    
             previousOperation = operation; // this is solely for operation display purpose.
             operation = getOperation(operator);
             numIsDecimal = false;
