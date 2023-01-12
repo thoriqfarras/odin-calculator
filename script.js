@@ -28,7 +28,9 @@ function buttonUnpressed(button) {
 
 function fillMainDisplay(button) {
     const mainDisplay = document.getElementById('main-display');
-    mainDisplay.textContent += button.textContent;
+    if (mainDisplay.textContent.length < 12) {
+        mainDisplay.textContent += button.textContent;
+    }
 }
 
 function updateOperationDisplay(button) {
@@ -36,8 +38,11 @@ function updateOperationDisplay(button) {
     const operationDisplay = document.getElementById('operation');
     if (button.textContent === EQUAL) {
         operationDisplay.textContent = `${a} ${previousOperation} ${b} =`;
+    } else if (operation === EQUAL) { 
+        return 
+    } else if (typeof(a) !== 'number') {
+        clearOperationDisplay();
     } else {
-        if (operation === EQUAL) return;
         operationDisplay.textContent = mainDisplay.textContent + ' ' + 
                                         button.textContent;
     }
@@ -85,19 +90,26 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+    if (b === 0) return 'Silly';
     return +new Decimal(a).dividedBy(b);
 }
 
 function operate(a, b, operation) {
-    if (operation === ADD) {
-        return add(a, b)
-    } else if (operation === SUBTRACT) {
-        return subtract(a, b)
-    } else if (operation === MULTIPLY) {
-        return multiply(a, b)
-    } else if (operation === DIVIDE) {
-        return divide(a, b)
-    } else return null;
+    let result = null;
+    if (operation === ADD) result = add(a, b)
+    else if (operation === SUBTRACT) result = subtract(a, b);
+    else if (operation === MULTIPLY) result = multiply(a, b);
+    else if (operation === DIVIDE) result = divide(a, b);
+
+    if (result > 999999999999) {
+        result = 'Num too big';
+    }
+
+    if (result.toString().length >= 12) {
+        const lenBeforeDP = result.toString().split(".")[0].length;
+        result = result.toFixed(12 - lenBeforeDP);
+    }
+    return result;
 }
 
 function getDisplayValue() {
@@ -136,7 +148,8 @@ function reset() {
 // (DONE)1. follow up calculations following an equal
 // (DONE)2. fix operantor symbol in operation display when pressing equal for the very first time.
 // (DONE)3. error in multiplication & division when b is not yet input
-// 4. incorrect operator in operation display after finishing a calculation following a cleanup.
+// (DONE) 4. incorrect operator in operation display after finishing a calculation following a cleanup.
+// 5. calculator resetting when trying do a follow up calculation on a number with lots of decimal places.
 
 const ADD = '+';
 const SUBTRACT = '-';
@@ -212,7 +225,14 @@ buttons.forEach(button => {
                 operation = getOperation(operator);
                 previousEventIsOperator = true;
             } else b = +getDisplayValue();
-
+            
+            // handle error messages.
+            if (typeof(result) !== 'number') {
+                reset();
+                return;
+            }
+            
+            
             // follow up calculations after pressing equal
             if (operator !== EQUAL && finished) {
                 finished = false;
@@ -231,14 +251,21 @@ buttons.forEach(button => {
                     return;
                 } else if (previousEventIsOperator && operator === EQUAL) return;
                 
-                if (button.textContent === EQUAL && operating) {
+                if (button.textContent === EQUAL && operating ) {
                     result = operate(a, b, operation);             
                     operating = false;
                     finished = true;
                 } else if (b !== null) { // the condition is to fix error in multiplication / division when b is not yet input.
+                    console.log('ahoy');
                     operating = true;
                     result = operate(a, b, operation);
                     a = result;
+
+                    // handle non-number a value in continuous operation.
+                    if (typeof(a) !== 'number') {
+                        operating = false;
+                        finished = true;
+                    }
                     operation = getOperation(operator);   
                 }
                 displayResult();
