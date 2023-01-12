@@ -192,8 +192,12 @@ buttons.forEach(button => {
         } else if (button.id === 'clear') {
             reset();
         } else if (button.id === 'delete') {
+            if (finished) {
+                reset();
+            }
             deleted = deleteDigit();
             if (deleted === '.') numIsDecimal = false;
+            if (!mainDisplay.textContent) mainDisplay.textContent = '0';
         } else if (button.id === 'plus-minus') {
             if (previousEventIsOperator) {
                 mainDisplay.textContent = '0';
