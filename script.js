@@ -141,7 +141,8 @@ function reset() {
 // TO FIX:
 // (DONE)1. follow up calculations following an equal
 // (DONE)2. fix operantor symbol in operation display when pressing equal for the very first time.
-// (DONE )3. error in multiplication & division when b is not yet input
+// (DONE)3. error in multiplication & division when b is not yet input
+// 4. incorrect operator in operation display after finishing a calculation following a cleanup.
 
 const ADD = '+';
 const SUBTRACT = '-';
@@ -152,15 +153,12 @@ const mainDisplay = document.getElementById('main-display');
 const buttons = document.querySelectorAll('button');
 let numIsDecimal = false;
 let deleted = '';
-let operator = '';
-let prevOperation = '';
 let a = null;
 let b = null;
 let result = null;
 let operation = null;
 let previousOperation = null;
 let previousEventIsOperator = false;
-
 let operating = false;
 let finished = false;
 
@@ -175,9 +173,6 @@ buttons.forEach(button => {
     
     button.addEventListener('click', () => {
         if (button.id === 'decimal-point' && numIsDecimal) return;
-        
-        // doesn't reset display when equal button is pressed twice.
-        // if (previousEventIsOperator && operation === EQUAL) previousEventIsOperator = false;
 
         if (button.className === 'number') {
             if (previousEventIsOperator) {
@@ -185,24 +180,23 @@ buttons.forEach(button => {
                 previousEventIsOperator = false;
             }
 
-            if (finished) {
-                reset();
-            }
+            if (finished) reset();
 
             if (mainDisplay.textContent === '0' && button.textContent !== '.') {
                 mainDisplay.textContent = '';
             } else if (mainDisplay.textContent === '-0' && button.textContent !== '.') {
                 mainDisplay.textContent = '-';
             }
-            if (button.id === 'decimal-point') {
-                numIsDecimal = true;
-            } 
+
+            if (button.id === 'decimal-point') numIsDecimal = true; 
+            
             fillMainDisplay(button);
         } else if (button.id === 'clear') {
             reset();
         } else if (button.id === 'delete') {
             if (finished) {
                 reset();
+                return;
             }
             deleted = deleteDigit();
             if (deleted === '.') numIsDecimal = false;
@@ -247,15 +241,11 @@ buttons.forEach(button => {
                     result = operate(a, b, operation);             
                     operating = false;
                     finished = true;
-                    // a = result; // saving result in a for when the user does another operation on the result.
-                    // operation = getOperation(operator); 
-                    // previousEventIsOperator = false;
-                } else if (b !== null) { // to fix error in multiplication / division when b is not yet input.
+                } else if (b !== null) { // the condition is to fix error in multiplication / division when b is not yet input.
                     operating = true;
                     result = operate(a, b, operation);
                     a = result;
                     operation = getOperation(operator);   
-                    // previousEventIsOperator = true;
                 }
                 displayResult();
                 updateOperationDisplay(button);
@@ -263,100 +253,7 @@ buttons.forEach(button => {
                 numIsDecimal = false;
                 previousOperation = operation;
             }
-                
-
-            /* if (a === null) {
-                operating = true;
-                a = +getDisplayValue();
-                result = a;
-                operation = getOperation(operator);
-                previousEventIsOperator = true;
-            } else if (operating) { 
-
-                // check for change of operator before taking in second input.
-                if (previousEventIsOperator && operator !== EQUAL) {
-                    operation = getOperation(operator);
-                    updateOperationDisplay(button);
-                    return;
-                } else if (previousEventIsOperator && operator === EQUAL) return;
-                
-
-                b = +getDisplayValue();
-                if (button.textContent === EQUAL && operating) {
-                    result = operate(a, b, operation);             
-                    operating = false;
-                    finished = true;
-                    // a = result; // saving result in a for when the user does another operation on the result.
-                    // operation = getOperation(operator); 
-                    // previousEventIsOperator = false;
-                } else {
-                    operating = true;
-                    result = operate(a, b, operation);
-                    a = result;
-                    operation = getOperation(operator);   
-                    // previousEventIsOperator = true;
-                }
-            }
-
-            displayResult();
-            updateOperationDisplay(button);
-            previousEventIsOperator = button.textContent === EQUAL ? false : true;
-            numIsDecimal = false;
-            previousOperation = operation;
-            */
-
-            /* if (a === null) {
-                operating = true;
-                a = +getDisplayValue();
-                result = a;
-                operation = getOperation(operator);
-                previousEventIsOperator = true;
-            } else b = +getDisplayValue() 
-
-            // check for change of operator before taking in second input.
-            if (previousEventIsOperator && operator !== EQUAL) {
-                operation = getOperation(operator);
-                updateOperationDisplay(button);
-                return;
-            } else if (previousEventIsOperator && operator === EQUAL) return;
-
-            if (button.textContent === EQUAL && operating) {
-                result = operate(a, b, operation);             
-                operating = false;
-                // a = result; // saving result in a for when the user does another operation on the result.
-                // operation = getOperation(operator);   
-                // previousEventIsOperator = false;
-            } else if (operating) {
-                operating = true
-                result = operate(a, b, operation);
-                a = result;
-                operation = getOperation(operator);   
-                // previousEventIsOperator = true;
-            }
-            
-
-            displayResult();
-            updateOperationDisplay(button);
-            previousEventIsOperator = button.textContent === EQUAL ? false : true;
-            numIsDecimal = false;
-            previousOperation = operation; */
-            
-            // DEBUGGING
-            console.log(`a: ${a}`);
-            console.log(`b: ${b}`);
-            console.log(`result: ${result}`);
-            console.log(`previous operation: ${previousOperation}`);
-            console.log(`operation: ${operation}`);
-            console.log(`operating: ${operating ? 'yes' : 'no'}`);
         }
-        lastPressed = button.textContent;
     }); 
     
 });
-
-/* 
-1. operator is pressed
-    - operating = true
-    - 
-
-*/
