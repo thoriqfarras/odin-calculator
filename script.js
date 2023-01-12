@@ -1,9 +1,3 @@
-/* 
-    PROGRESS UPDATE:
-
-    Calculation functionality is somewhat done but has SO many bugs.
-*/
-
 function buttonPressed() {
     if (this.id === 'equal') {
         this.style['background-color'] = 'rgb(186, 117, 0)';
