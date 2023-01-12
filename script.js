@@ -73,19 +73,19 @@ function toggleNumberSign() {
 }
 
 function add(a, b) {
-    return a + b;
+    return +new Decimal(a).add(b);
 }
 
 function subtract(a, b) {
-    return a - b;
+    return +new Decimal(a).minus(b);
 }
 
 function multiply(a, b) {
-    return a * b;
+    return +new Decimal(a).times(b);
 }
 
 function divide(a, b) {
-    return a / b;
+    return +new Decimal(a).dividedBy(b);
 }
 
 function operate(a, b, operation) {
@@ -247,6 +247,13 @@ buttons.forEach(button => {
                 numIsDecimal = false;
                 previousOperation = operation;
             }
+        // DEBUGGING
+        console.log(`a: ${a} ${typeof a}`);
+        console.log(`b: ${b} ${typeof b}`);
+        console.log(`result: ${result} ${typeof result}`);
+        console.log(`previous operation: ${previousOperation}`);
+        console.log(`operation: ${operation}`);
+        console.log(`operating: ${operating ? 'yes' : 'no'}`);
         }
     }); 
     
