@@ -135,7 +135,7 @@ function reset() {
 // TO FIX:
 // (DONE)1. follow up calculations following an equal
 // (DONE)2. fix operantor symbol in operation display when pressing equal for the very first time.
-// 3. error in multiplication & division
+// (DONE )3. error in multiplication & division when b is not yet input
 
 const ADD = '+';
 const SUBTRACT = '-';
@@ -195,18 +195,22 @@ buttons.forEach(button => {
             deleted = deleteDigit();
             if (deleted === '.') numIsDecimal = false;
         } else if (button.id === 'plus-minus') {
-            toggleNumberSign();
+            if (previousEventIsOperator) {
+                mainDisplay.textContent = '0';
+                previousEventIsOperator = false;
+                toggleNumberSign();
+            } else toggleNumberSign();
         } else if (button.className === 'operator' ) {
             const operator = button.textContent;
             
             
+            console.log('ahoyy');
             if (a === null) {
                 operating = true;
                 a = +getDisplayValue();
                 result = a;
                 operation = getOperation(operator);
                 previousEventIsOperator = true;
-                console.log(a);
             } else b = +getDisplayValue();
 
             // follow up calculations after pressing equal
@@ -218,7 +222,6 @@ buttons.forEach(button => {
                 operation = getOperation(operator);
             }
             
-            console.log(operating)
             if (operating) {
                 // check for change of operator before taking in second input.
                 if (previousEventIsOperator && operator !== EQUAL && b !== null) {
@@ -227,6 +230,7 @@ buttons.forEach(button => {
                     return;
                 } else if (previousEventIsOperator && operator === EQUAL) return;
                 
+                console.log(b)
                 if (button.textContent === EQUAL && operating) {
                     result = operate(a, b, operation);             
                     operating = false;
