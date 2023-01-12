@@ -132,6 +132,11 @@ function reset() {
     finished = false;
 }
 
+// TO FIX:
+// (DONE)1. follow up calculations following an equal
+// (DONE)2. fix operantor symbol in operation display when pressing equal for the very first time.
+// 3. error in multiplication & division
+
 const ADD = '+';
 const SUBTRACT = '-';
 const MULTIPLY = 'x';
@@ -194,10 +199,6 @@ buttons.forEach(button => {
         } else if (button.className === 'operator' ) {
             const operator = button.textContent;
             
-            // TO FIX:
-            // (DONE)1. follow up calculations following an equal
-            // (DONE)2. fix operantor symbol in operation display when pressing equal for the very first time.
-            
             
             if (a === null) {
                 operating = true;
@@ -205,13 +206,16 @@ buttons.forEach(button => {
                 result = a;
                 operation = getOperation(operator);
                 previousEventIsOperator = true;
+                console.log(a);
             } else b = +getDisplayValue();
-            
+
+            // follow up calculations after pressing equal
             if (operator !== EQUAL && finished) {
                 finished = false;
                 operating = true;
                 a = result;
-                b = 0;
+                b = null;
+                operation = getOperation(operator);
             }
             
             console.log(operating)
@@ -230,7 +234,7 @@ buttons.forEach(button => {
                     // a = result; // saving result in a for when the user does another operation on the result.
                     // operation = getOperation(operator); 
                     // previousEventIsOperator = false;
-                } else {
+                } else if (b !== null) { // to fix error in multiplication / division when b is not yet input.
                     operating = true;
                     result = operate(a, b, operation);
                     a = result;
