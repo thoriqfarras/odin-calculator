@@ -207,8 +207,7 @@ buttons.forEach(button => {
         } else if (button.className === 'operator' ) {
             const operator = button.textContent;
             
-            
-            console.log('ahoyy');
+            // handle input and assign to respective variables.
             if (a === null) {
                 operating = true;
                 a = +getDisplayValue();
@@ -227,6 +226,7 @@ buttons.forEach(button => {
             }
             
             if (operating) {
+                
                 // check for change of operator before taking in second input.
                 if (previousEventIsOperator && operator !== EQUAL && b !== null) {
                     operation = getOperation(operator);
@@ -234,7 +234,6 @@ buttons.forEach(button => {
                     return;
                 } else if (previousEventIsOperator && operator === EQUAL) return;
                 
-                console.log(b)
                 if (button.textContent === EQUAL && operating) {
                     result = operate(a, b, operation);             
                     operating = false;
