@@ -79,10 +79,6 @@ footer {
     font-size: 48px;
 }
 
-.component {
-
-}
-
 #buttons {
     flex: 1;
     width: 100%;
@@ -103,10 +99,6 @@ button {
     color: lightgray;
     font-size: 20px;
     cursor: pointer;
-}
-
-.button.bottom-left {
-    /* border-bottom-left-radius: 15px; */
 }
 
 .operator {
