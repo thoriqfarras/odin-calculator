@@ -103,11 +103,9 @@ function operate(a, b, operation) {
 
     if (result > 999999999999) {
         result = 'Num too big';
-    }
-
-    if (result.toString().length >= 12) {
+    } else if (result.toString().length >= 11) {
         const lenBeforeDP = result.toString().split(".")[0].length;
-        result = result.toFixed(12 - lenBeforeDP);
+        result = +result.toFixed(12 - lenBeforeDP);
     }
     return result;
 }
@@ -149,7 +147,7 @@ function reset() {
 // (DONE)2. fix operantor symbol in operation display when pressing equal for the very first time.
 // (DONE)3. error in multiplication & division when b is not yet input
 // (DONE) 4. incorrect operator in operation display after finishing a calculation following a cleanup.
-// 5. calculator resetting when trying do a follow up calculation on a number with lots of decimal places.
+// (DONE) 5. calculator resetting when trying do a follow up calculation on a number with lots of decimal places.
 
 const ADD = '+';
 const SUBTRACT = '-';
@@ -256,7 +254,6 @@ buttons.forEach(button => {
                     operating = false;
                     finished = true;
                 } else if (b !== null) { // the condition is to fix error in multiplication / division when b is not yet input.
-                    console.log('ahoy');
                     operating = true;
                     result = operate(a, b, operation);
                     a = result;
@@ -274,13 +271,6 @@ buttons.forEach(button => {
                 numIsDecimal = false;
                 previousOperation = operation;
             }
-        // DEBUGGING
-        console.log(`a: ${a} ${typeof a}`);
-        console.log(`b: ${b} ${typeof b}`);
-        console.log(`result: ${result} ${typeof result}`);
-        console.log(`previous operation: ${previousOperation}`);
-        console.log(`operation: ${operation}`);
-        console.log(`operating: ${operating ? 'yes' : 'no'}`);
         }
     }); 
     
